@@ -12,7 +12,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/static_dish", StaticFiles(directory="static_dish"), name="static_dish")
 
-templates = Jinja2Templates(directory="ProjectMenu/frontend/templates")
+templates = Jinja2Templates(directory="frontend/templates")
 
 DB_NAME = "menuproject3.db"
 
