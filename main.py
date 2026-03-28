@@ -6,7 +6,6 @@ from fastapi.templating import Jinja2Templates
 from math import ceil
 
 
-
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
