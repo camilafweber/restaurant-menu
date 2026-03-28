@@ -1,5 +1,5 @@
 import sqlite3
-DB_NAME = "menuproject.db"
+DB_NAME = "menuproject3.db"
 
 def get_conection():
     return sqlite3.connect(DB_NAME)
@@ -7,7 +7,7 @@ def get_conection():
 conection = get_conection()
 cursor = conection.cursor()
 
-conection = sqlite3.connect('menuproject.db')
+conection = sqlite3.connect('menuproject3.db')
 
 conection.row_factory = sqlite3.Row
 

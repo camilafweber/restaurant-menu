@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>FoodieFinder - Discover Best Food</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#f1b037",
+            "background-light": "#f8f7f6",
+            "background-dark": "#221c10",
+          },
+          fontFamily: { display: ["Plus Jakarta Sans", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen antialiased">
+
+  <div class="layout-container flex flex-col">
+    <header
+      class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-6 lg:px-20 py-4">
+
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-8">
+
+        <div class="flex items-center gap-12">
+
+          <div class="flex items-center gap-2 text-primary">
+            <span class="material-symbols-outlined text-3xl font-bold">restaurant</span>
+            <h2 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+              FoodieFinder
+            </h2>
+          </div>
+          <nav class="hidden md:flex items-center gap-8">
+            <a class="text-slate-600 dark:text-slate-400 hover:text-primary font-semibold transition-colors"
+              href="#">Home</a>
+            <a class="text-primary font-semibold" href="#">Explore</a>
+            <a class="text-slate-600 dark:text-slate-400 hover:text-primary font-semibold transition-colors"
+              href="#">Offers</a>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <button
+            class="bg-primary hover:bg-primary/90 text-slate-900 px-6 py-2 rounded-xl text-sm font-bold transition-all shadow-sm">
+            Sign Up
+          </button>
+
+          <div class="size-10 rounded-full border-2 border-primary/20 bg-cover bg-center overflow-hidden">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqM_c8EjUYXQgsu7ZfbIgMUv9pzQ9DOQ3xo6VMVPSxlI9LWPeWdtT2CQDHFSfBdTFfjmI4PaDybXyYUrs3uX7_PJL6h1IdDAqKboWNKgs4a1zGsjEmhlZ63LDxcuK9W3DuWIIAGHncGFjf0fnu6mjzH_2vWWYUcCwk2usATyXX9wXslyc6ThZkMAgX8D-yBHKmvKVqWrozAshP9lLmEc71hiTf8f6sjBuKYSvhC8BelCrzJ2u3aoZVQBLdZLyJV2sL7ofZ-tl4auU"
+              class="w-full h-full object-cover" alt="Profile" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full px-6 lg:px-20 py-8">
+
+      <section class="relative rounded-3xl overflow-hidden mb-12 shadow-2xl">
+
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-900/40 z-10"></div>
+
+        <div class="h-[450px] w-full bg-cover bg-center" style="
+              background-image: url(&quot;https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80&quot;);
+            "></div>
+
+        <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+          <h1 class="text-white text-4xl md:text-6xl font-black mb-4 tracking-tight">
+            Discover the best <span class="text-primary">food & drinks</span>
+          </h1>
+          <p class="text-white/80 text-lg mb-10 max-w-2xl">
+            Explore top-rated restaurants, cafes, and bars in your city
+            delivered to your doorstep.
+          </p>
+
+          <div class="w-full max-w-3xl flex flex-col md:flex-row p-2 bg-white rounded-2xl shadow-2xl gap-2">
+
+            <div class="flex-1 flex items-center px-4 gap-2 border-b md:border-b-0 md:border-r border-slate-100">
+              <span class="material-symbols-outlined text-slate-400">location_on</span>
+              <input class="w-full border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 py-3"
+                placeholder="Delivery location" type="text" />
+            </div>
+
+            <div class="flex-1 flex items-center px-4 gap-2">
+              <span class="material-symbols-outlined text-slate-400">search</span>
+              <input class="w-full border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 py-3"
+                placeholder="Cuisine or a dish" type="text" />
+            </div>
+            <button
+              class="bg-primary hover:bg-primary/90 text-slate-900 px-10 py-3 rounded-xl font-bold transition-all">
+              Search
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-12 overflow-x-auto no-scrollbar">
+
+        <div class="flex items-center gap-4 pb-2">
+          <button
+            class="flex items-center gap-2 px-6 py-3 bg-primary text-slate-900 rounded-xl font-bold whitespace-nowrap shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined">grid_view</span> All
+          </button>
+          {% for cat in ['Cafes', 'Bakeries', 'Bars', 'Fast Food', 'Gourmet']
+            %}
+          <button
+            class="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold whitespace-nowrap hover:border-primary transition-all">
+            {{ cat }}
+          </button>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section>
+
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-black tracking-tight">
+            Popular Restaurants Nearby
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {% for company in companies %}
+          <a href="/company/{{ company['id'] }}"
+            class="group block bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all duration-300">
+
+            <div class="relative aspect-[16/10] overflow-hidden">
+
+              <div
+                class="absolute top-3 right-3 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                <span class="text-slate-900 dark:text-white text-xs font-bold">{{ company['stars'] }}</span>
+              </div>
+              <img alt="{{ company['name'] }}"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                src="/static/images/restaurants/{{ company['image_path'] }}" />
+            </div>
+
+            <div class="p-5">
+              <h3 class="text-lg font-bold group-hover:text-primary transition-colors mb-2">
+                {{ company['name'] }}
+              </h3>
+              <p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">
+                {{ company['summary'] if company['summary'] else 'Experience
+                  the finest ingredients and unique flavors.' }}
+              </p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        <div class="flex justify-center items-center gap-2 mt-16">
+          {% if current_page > 1 %}
+          <a href="/companies?page={{ current_page - 1 }}"
+            class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </a>
+          {% endif %}
+
+          {% for p in range(1, total_pages + 1) %}
+          <a href="/companies?page={{ p }}"
+            class="size-10 rounded-xl flex items-center justify-center font-bold transition-all 
+                   {{ 'bg-primary text-background-dark shadow-lg shadow-primary/20' if p == current_page else 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-primary hover:text-primary' }}">
+            {{ p }}
+          </a>
+          {% endfor %}
+
+          {% if current_page < total_pages %}
+          <a href="/companies?page={{ current_page + 1 }}"
+            class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </a>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-white dark:bg-background-dark border-t border-primary/10 mt-20 py-16 px-6 lg:px-20">
+
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
+
+        <div class="space-y-6">
+
+          <div class="flex items-center gap-2 text-primary">
+            <h2 class="text-xl font-extrabold tracking-tight dark:text-white">
+              FoodieFinder
+            </h2>
+          </div>
+          <p class="text-slate-500 dark:text-slate-400">
+            Connecting food lovers with the best flavors in the city since
+            2026.
+          </p>
+        </div>
+        {% for title, links in [('Explore', ['Top Rated', 'Deals']),
+          ('Support', ['Help Center', 'Contact']), ('App', ['App Store', 'Play
+          Store'])] %}
+
+        <div>
+          <h5 class="text-slate-900 dark:text-white font-bold mb-4 uppercase text-xs tracking-widest">
+            {{ title }}
+          </h5>
+          <ul class="space-y-2 text-slate-500">
+            {% for link in links %}
+            <li>
+              <a href="#" class="hover:text-primary transition-colors">{{ link }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>

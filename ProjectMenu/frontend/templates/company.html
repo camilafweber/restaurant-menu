@@ -1,0 +1,400 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{{name}} | Fine Dining Experience</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f1b037",
+              "background-light": "#f8f7f6",
+              "background-dark": "#221c10",
+            },
+            fontFamily: {
+              display: ["Plus Jakarta Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100"
+  >
+    <div class="layout-container flex h-full grow flex-col">
+      <!-- Top Navigation -->
+      <header
+        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white dark:bg-background-dark px-10 py-4 sticky top-0 z-50"
+      >
+        <div class="flex items-center gap-8">
+          <div
+            class="flex items-center gap-3 text-slate-900 dark:text-slate-100"
+          >
+            <div
+              class="size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark"
+            >
+              <span class="material-symbols-outlined">restaurant</span>
+            </div>
+            <h2 class="text-xl font-bold leading-tight tracking-tight">
+              {{ name }}
+            </h2>
+          </div>
+          <nav class="hidden md:flex items-center gap-8">
+            <a
+              class="text-sm font-semibold hover:text-primary transition-colors"
+              href="/company"
+              >Home</a
+            >
+            <a
+              class="text-sm font-semibold hover:text-primary transition-colors"
+              href="#"
+              >Menu</a
+            >
+            <a
+              class="text-sm font-semibold hover:text-primary transition-colors"
+              href="#"
+              >Reservations</a
+            >
+            <a
+              class="text-sm font-semibold hover:text-primary transition-colors"
+              href="#"
+              >Contact</a
+            >
+          </nav>
+        </div>
+        <div class="flex items-center gap-6">
+          <div
+            class="hidden lg:flex items-center bg-slate-100 dark:bg-white/5 rounded-xl px-3 py-1.5"
+          >
+            <span class="material-symbols-outlined text-slate-400 text-xl"
+              >search</span
+            >
+            <input
+              class="bg-transparent border-none focus:ring-0 text-sm w-48"
+              placeholder="Search menu..."
+              type="text"
+            />
+          </div>
+          <button
+            class="bg-primary text-background-dark px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
+          >
+            Book a Table
+          </button>
+        </div>
+      </header>
+      <main class="flex-1">
+        <!-- Hero Section -->
+        <section class="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
+          <div
+            class="absolute inset-0 bg-cover bg-center"
+            data-alt="Elegant restaurant interior with warm lighting and wooden furniture"
+            style="
+              background-image:
+                linear-gradient(
+                  to bottom,
+                  rgba(0, 0, 0, 0.2),
+                  rgba(0, 0, 0, 0.7)
+                ),
+                url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCqFY7KLDCMU1KgJuCmBBojlpeF_DCvd7SXIR-LC221i_LQ4akxi9aSu3_bik8B0K1S4J3CpnKO_kOzB-Rga66Q9fwq7Wkrhs4aQAGQKKJ__jplVLuZwSUNulwNGhMdhJS9KrZx8Ga8JHhHbxueeE3l7hE2ocVGgJvoyBQFgaivPiK9BS9VGcsZD_0-cgkeEVAXyS19y9TnZsjQfg5hWQ4KoCanOmebt9aWSrBrmrmYXV2jnMV5n2BboIOXQRns3JZAQlxYaSJteN0&quot;);
+            "
+          ></div>
+          <div
+            class="relative h-full flex flex-col items-center justify-center text-center px-4"
+          >
+            >
+            <h1
+              class="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-lg"
+            >
+              {{name}}
+            </h1>
+            <p
+              class="text-lg md:text-xl text-white/90 max-w-2xl mb-8 leading-relaxed"
+            >
+              {{summary}}
+            </p>
+            <div class="flex gap-4">
+              <button
+                class="bg-primary text-background-dark px-8 py-4 rounded-xl font-bold text-base hover:scale-105 transition-transform"
+              >
+                Explore Menu
+              </button>
+            </div>
+          </div>
+        </section>
+        <!-- Content Grid -->
+        <div
+          class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12"
+        >
+          <!-- Main Content (Left) -->
+          <div class="lg:col-span-8 space-y-12">
+            <!-- About Section -->
+            <section>
+              <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-1 bg-primary rounded-full"></span>
+                Um pouco sobre o restaurante
+              </h2>
+              <p
+                class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6"
+              >
+                {{description}}
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+                <div
+                  class="p-6 bg-white dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-3xl mb-3"
+                    >award_star</span
+                  >
+                  <h3 class="font-bold mb-1">Michelin Star</h3>
+                  <p class="text-sm text-slate-500">Excellence in every bite</p>
+                </div>
+                <div
+                  class="p-6 bg-white dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-3xl mb-3"
+                    >local_shipping</span
+                  >
+                  <h3 class="font-bold mb-1">Local Sourcing</h3>
+                  <p class="text-sm text-slate-500">Fresh daily ingredients</p>
+                </div>
+                <div
+                  class="p-6 bg-white dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-3xl mb-3"
+                    >wine_bar</span
+                  >
+                  <h3 class="font-bold mb-1">Expert Pairing</h3>
+                  <p class="text-sm text-slate-500">Curated wine selection</p>
+                </div>
+              </div>
+            </section>
+            <!-- Location & Contact -->
+            <section id="location">
+              <h2 class="text-3xl font-bold mb-6">Location &amp; Contact</h2>
+              <div
+                class="w-full h-80 rounded-2xl overflow-hidden relative border border-slate-200 dark:border-white/10 mb-6"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="Map showing the location of the restaurant in Madrid center"
+                  data-location="Madrid, Spain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq3JguWMLCYhz25H2MDiVgP7PcFSK1OUZsjn1ChKtt_3ip_iidtUcKp14gU5grL6mg3uq82sdncr3nRtgU2eD8970zSrcr4lw8nej8vieGwp5MjleuxEDX7dlb29Z9Ub_9-pwMWXDeF8IF8w51lpRdP6e_CNj6eaLI8BLBrRFdHRXBwe76IdunoAbW8jaaQAkGkp4k0kVAEjEgoONFqX7VXe2YCuDo0z5eoKOu483saRnnH5RmhxfmY2c-KiM3OX6iFkdy6juw9yU"
+                />
+                <div
+                  class="absolute bottom-4 left-4 right-4 bg-white dark:bg-background-dark p-4 rounded-xl shadow-lg flex justify-between items-center"
+                >
+                  <div>
+                    <p class="font-bold text-sm">Calle de la Gastronomía, 42</p>
+                    <p class="text-xs text-slate-500">28001 Madrid, Spain</p>
+                  </div>
+                  <button
+                    class="bg-primary text-background-dark p-2 rounded-lg"
+                  >
+                    <span class="material-symbols-outlined">directions</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <!-- Sidebar (Right) -->
+          <aside class="lg:col-span-4 space-y-8">
+            <!-- Opening Hours Card -->
+            <div
+              class="bg-white dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-8 shadow-sm"
+            >
+              <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary"
+                  >schedule</span
+                >
+                Opening Hours
+              </h3>
+              <ul class="space-y-4">
+                <li
+                  class="flex justify-between items-center pb-3 border-b border-slate-50 dark:border-white/5"
+                >
+                  <span class="font-medium">Monday</span>
+                  <span class="text-slate-500 italic">Closed</span>
+                </li>
+                <li
+                  class="flex justify-between items-center pb-3 border-b border-slate-50 dark:border-white/5"
+                >
+                  <span class="font-medium">Tuesday - Thursday</span>
+                  <span class="text-slate-600 dark:text-slate-400"
+                    >12:00 - 23:00</span
+                  >
+                </li>
+                <li
+                  class="flex justify-between items-center pb-3 border-b border-slate-50 dark:border-white/5"
+                >
+                  <span class="font-medium">Friday - Saturday</span>
+                  <span class="text-slate-600 dark:text-slate-400"
+                    >12:00 - 00:30</span
+                  >
+                </li>
+                <li class="flex justify-between items-center">
+                  <span class="font-medium">Sunday</span>
+                  <span class="text-slate-600 dark:text-slate-400"
+                    >12:00 - 22:00</span
+                  >
+                </li>
+              </ul>
+              <div
+                class="mt-8 flex items-center gap-3 p-4 bg-primary/10 rounded-xl border border-primary/20"
+              >
+                <span class="material-symbols-outlined text-primary">info</span>
+                <p class="text-xs font-medium leading-snug">
+                  Kitchen closes 45 minutes before restaurant closing time.
+                </p>
+              </div>
+            </div>
+            <!-- Contact Details Card -->
+            <div
+              class="bg-white dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-8 shadow-sm"
+            >
+              <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary"
+                  >contact_page</span
+                >
+                Get in Touch
+              </h3>
+              <div class="space-y-6">
+                <div class="flex gap-4">
+                  <div
+                    class="size-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-xl"
+                      >call</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-slate-500 uppercase font-bold tracking-wider"
+                    >
+                      Phone
+                    </p>
+                    <p class="font-semibold">+34 912 345 678</p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div
+                    class="size-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-xl"
+                      >mail</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-slate-500 uppercase font-bold tracking-wider"
+                    >
+                      Email
+                    </p>
+                    <p class="font-semibold">reservations@saborarte.com</p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div
+                    class="size-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-xl"
+                      >language</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="text-xs text-slate-500 uppercase font-bold tracking-wider"
+                    >
+                      Socials
+                    </p>
+                    <div class="flex gap-3 mt-1">
+                      <a class="text-slate-400 hover:text-primary" href="#"
+                        ><span class="material-symbols-outlined"
+                          >public</span
+                        ></a
+                      >
+                      <a class="text-slate-400 hover:text-primary" href="#"
+                        ><span class="material-symbols-outlined"
+                          >camera_enhance</span
+                        ></a
+                      >
+                      <a class="text-slate-400 hover:text-primary" href="#"
+                        ><span class="material-symbols-outlined"
+                          >alternate_email</span
+                        ></a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer class="bg-slate-900 text-white py-12 px-10">
+        <div
+          class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="size-10 bg-primary rounded-lg flex items-center justify-center text-background-dark"
+            >
+              <span class="material-symbols-outlined">restaurant</span>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold leading-tight tracking-tight">
+                Sabor &amp; Arte
+              </h2>
+              <p class="text-xs text-slate-400">
+                © 2024 Sabor &amp; Arte. All rights reserved.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-10">
+            <a class="text-sm hover:text-primary transition-colors" href="#"
+              >Privacy Policy</a
+            >
+            <a class="text-sm hover:text-primary transition-colors" href="#"
+              >Terms of Service</a
+            >
+            <a class="text-sm hover:text-primary transition-colors" href="#"
+              >Careers</a
+            >
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
