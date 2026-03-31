@@ -64,7 +64,7 @@
         <div class="flex items-center gap-12">
 
           <div class="flex items-center gap-2 text-primary">
-            <span class="material-symbols-outlined text-3xl font-bold">restaurant</span>
+
             <h2 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
               FoodieFinder
             </h2>
@@ -79,10 +79,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-          <button
-            class="bg-primary hover:bg-primary/90 text-slate-900 px-6 py-2 rounded-xl text-sm font-bold transition-all shadow-sm">
-            Sign Up
-          </button>
+
 
           <div class="size-10 rounded-full border-2 border-primary/20 bg-cover bg-center overflow-hidden">
             <img
@@ -112,40 +109,37 @@
             delivered to your doorstep.
           </p>
 
-          <div class="w-full max-w-3xl flex flex-col md:flex-row p-2 bg-white rounded-2xl shadow-2xl gap-2">
-
-            <div class="flex-1 flex items-center px-4 gap-2 border-b md:border-b-0 md:border-r border-slate-100">
-              <span class="material-symbols-outlined text-slate-400">location_on</span>
-              <input class="w-full border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 py-3"
-                placeholder="Delivery location" type="text" />
-            </div>
+          <form action="/companies" method="get"
+            class="w-full max-w-3xl flex flex-col md:flex-row p-2 bg-white rounded-2xl shadow-2xl gap-2">
+            {% if selected_category_id %}
+            <input type="hidden" name="category_id" value="{{ selected_category_id }}" />
+            {% endif %}
 
             <div class="flex-1 flex items-center px-4 gap-2">
-              <span class="material-symbols-outlined text-slate-400">search</span>
+              <span class="material-symbols-outlined text-slate-400"></span>
               <input class="w-full border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 py-3"
-                placeholder="Cuisine or a dish" type="text" />
+                name="search" value="{{ selected_search }}" placeholder="Cuisine or a dish" type="text" />
             </div>
-            <button
+            <button type="submit"
               class="bg-primary hover:bg-primary/90 text-slate-900 px-10 py-3 rounded-xl font-bold transition-all">
               Search
             </button>
-          </div>
+          </form>
         </div>
       </section>
 
       <section class="mb-12 overflow-x-auto no-scrollbar">
 
         <div class="flex items-center gap-4 pb-2">
-          <button
-            class="flex items-center gap-2 px-6 py-3 bg-primary text-slate-900 rounded-xl font-bold whitespace-nowrap shadow-lg shadow-primary/20">
+          <a href="/companies{% if selected_search %}?search={{ selected_search | urlencode }}{% endif %}"
+            class="flex items-center gap-2 px-6 py-3 rounded-xl whitespace-nowrap transition-all {{ 'bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20' if not selected_category_id else 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold hover:border-primary' }}">
             All
-          </button>
-          {% for cat in ['Cafes', 'Bakeries', 'Bars', 'Fast Food', 'Gourmet']
-            %}
-          <button
-            class="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold whitespace-nowrap hover:border-primary transition-all">
-            {{ cat }}
-          </button>
+          </a>
+          {% for cat in category_options %}
+          <a href="/companies?category_id={{ cat['id'] }}{% if selected_search %}&search={{ selected_search | urlencode }}{% endif %}"
+            class="flex items-center gap-2 px-6 py-3 rounded-xl whitespace-nowrap transition-all {{ 'bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20' if selected_category_id == cat['id'] else 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold hover:border-primary' }}">
+            {{ cat['label'] }}
+          </a>
           {% endfor %}
         </div>
       </section>
@@ -154,7 +148,7 @@
 
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-3xl font-black tracking-tight">
-            Popular Restaurants Nearby
+            {{ 'Search Results' if selected_search else 'Popular Restaurants Nearby' }}
           </h2>
         </div>
 
@@ -186,17 +180,36 @@
           </a>
           {% endfor %}
         </div>
+        {% if not companies %}
+
+        <div class="mt-10 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center">
+          <p class="text-lg font-bold text-slate-900 dark:text-slate-100">No restaurants found for this filter.</p>
+          <p class="mt-2 text-slate-500 dark:text-slate-400">Try another category, another search term, or view all
+            restaurants.</p>
+        </div>
+        {% endif %}
+
+        {% set page_suffix = '' %}
+        {% if selected_category_id %}
+        {% set page_suffix = page_suffix ~ '&category_id=' ~ selected_category_id %}
+        {% endif %}
+        {% if selected_search %}
+        {% set page_suffix = page_suffix ~ '&search=' ~ (selected_search | urlencode) %}
+        {% endif %}
 
         <div class="flex justify-center items-center gap-2 mt-16">
           {% if current_page > 1 %}
-          <a href="/companies?page={{ current_page - 1 }}"
+          <a href="/companies?page={{ current_page - 1 }}{{ page_suffix }}"
             class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
-            <span class="material-symbols-outlined">chevron_left</span>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M12.5 5 7.5 10l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
           </a>
           {% endif %}
 
           {% for p in range(1, total_pages + 1) %}
-          <a href="/companies?page={{ p }}"
+          <a href="/companies?page={{ p }}{{ page_suffix }}"
             class="size-10 rounded-xl flex items-center justify-center font-bold transition-all 
                    {{ 'bg-primary text-background-dark shadow-lg shadow-primary/20' if p == current_page else 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-primary hover:text-primary' }}">
             {{ p }}
@@ -204,9 +217,12 @@
           {% endfor %}
 
           {% if current_page < total_pages %}
-          <a href="/companies?page={{ current_page + 1 }}"
+          <a href="/companies?page={{ current_page + 1 }}{{ page_suffix }}"
             class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
-            <span class="material-symbols-outlined">chevron_right</span>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M7.5 5 12.5 10l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
           </a>
           {% endif %}
         </div>

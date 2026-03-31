@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Your Cart</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light text-slate-900 min-h-screen antialiased">
+    <main class="max-w-5xl mx-auto px-6 lg:px-12 py-10">
+      <div class="flex items-center justify-between gap-4 mb-10">
+        <div>
+          <p class="text-sm font-semibold text-primary">Cart</p>
+          <h1 class="text-4xl font-extrabold tracking-tight">Your order</h1>
+        </div>
+        <a href="/dishes" class="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold hover:border-primary hover:text-primary transition-colors">
+          Back to dishes
+        </a>
+      </div>
+
+      {% if items %}
+      <div class="grid gap-6">
+        {% for item in items %}
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+          <div class="flex items-center gap-4 min-w-0">
+            <img class="h-20 w-20 rounded-xl object-cover" src="/static_dish/images/{{ item['image_url'] }}" alt="{{ item['name'] }}" />
+            <div class="min-w-0">
+              <h2 class="text-lg font-bold truncate">{{ item['name'] }}</h2>
+              <p class="text-sm text-slate-500">Unit price: R$ {{ "%.2f"|format(item['price']) }}</p>
+              <div class="mt-3 inline-flex items-center rounded-xl border border-slate-200 overflow-hidden">
+                <a href="/cart/decrease?dish_id={{ item['id'] }}&next=/cart" class="h-10 w-10 flex items-center justify-center text-lg font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                  -
+                </a>
+                <span class="min-w-12 px-3 text-center text-sm font-bold">{{ item['quantity'] }}</span>
+                <a href="/cart/increase?dish_id={{ item['id'] }}&next=/cart" class="h-10 w-10 flex items-center justify-center text-lg font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                  +
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 sm:flex-col sm:items-end">
+            <p class="text-lg font-extrabold text-primary">R$ {{ "%.2f"|format(item['subtotal']) }}</p>
+            <a href="/cart/remove?dish_id={{ item['id'] }}&next=/cart" class="text-sm font-semibold text-slate-500 hover:text-red-500 transition-colors">
+              Remove
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-8 bg-white rounded-2xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-sm text-slate-500">{{ cart_count }} item{{ '' if cart_count == 1 else 's' }} in cart</p>
+          <p class="text-2xl font-extrabold">Total: R$ {{ "%.2f"|format(total_price) }}</p>
+        </div>
+        <a href="/dishes" class="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-slate-900 hover:bg-primary/90 transition-colors">
+          Add more dishes
+        </a>
+      </div>
+      {% else %}
+      <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+        <h2 class="text-2xl font-bold">Your cart is empty</h2>
+        <p class="mt-2 text-slate-500">Browse the menu and add a few dishes to get started.</p>
+        <a href="/dishes" class="inline-flex mt-6 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-slate-900 hover:bg-primary/90 transition-colors">
+          Explore dishes
+        </a>
+      </div>
+      {% endif %}
+    </main>
+  </body>
+</html>

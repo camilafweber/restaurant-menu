@@ -105,11 +105,17 @@
           </div>
           <div class="flex flex-1 justify-end gap-6 items-center">
            
-            <button
-              class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary transition-all"
+            <a
+              href="/cart"
+              class="relative flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary transition-all"
             >
               <span class="material-symbols-outlined">shopping_cart</span>
-            </button>
+              {% if cart_count %}
+              <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary text-slate-900 text-[10px] font-bold flex items-center justify-center">
+                {{ cart_count }}
+              </span>
+              {% endif %}
+            </a>
             <div
               class="h-10 w-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center overflow-hidden"
             >
@@ -143,25 +149,37 @@
           <div
             class="flex flex-col lg:flex-row gap-6 items-center justify-between mb-8 border-b border-slate-200 dark:border-slate-800 pb-2"
           >
-            <div
+            <form
+              action="/dishes"
+              method="get"
               class="flex gap-2 overflow-x-auto w-full lg:w-auto no-scrollbar"
             >
-              
-                <input
-                  class="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 dark:text-slate-100"
-                  placeholder="Search for dishes, ingredients..."
-                  type="text"
-                />
-                <button
-                  class="bg-primary/10 text-primary p-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"
-                >
-                  <span class="material-symbols-outlined text-xl">tune</span>
-                </button>
-              </div>
-            </div>
+              <input
+                class="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 dark:text-slate-100"
+                name="search"
+                value="{{ selected_search }}"
+                placeholder="Search for dishes, ingredients..."
+                type="text"
+              />
+              <button
+                type="submit"
+                class="bg-primary/10 text-primary p-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl">search</span>
+              </button>
+            </form>
+          </div>
           </div>
             <!-- Dish Card 1 -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  {% if selected_search %}
+  <div class="mb-6 flex items-center justify-between gap-4">
+    <p class="text-sm text-slate-500 dark:text-slate-400">
+      Results for <span class="font-bold text-slate-900 dark:text-slate-100">"{{ selected_search }}"</span>
+    </p>
+    <a href="/dishes" class="text-sm font-semibold text-primary hover:underline">Clear search</a>
+  </div>
+  {% endif %}
   
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
     {% for dish in dishes %}
@@ -172,7 +190,7 @@
           <img
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             alt="{{ dish['name'] }}"
-            src="/static_dish/images/{{ dish['image_url'] }}" 
+            src="/static_dish/images/{{ dish['image_url'] if dish['image_url'] else 'sanduiche_natural.png' }}" 
           />
         </a>
         <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm dark:bg-slate-900/90 px-2 py-0.5 rounded-lg text-[10px] font-bold text-primary shadow-sm">
@@ -196,26 +214,35 @@
           {{ dish['descript'] }}
         </p>
 
-        <button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 transition-colors mt-auto text-xs">
+        <a href="/cart/add?dish_id={{ dish['id'] }}&next={{ current_url | urlencode }}" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 transition-colors mt-auto text-xs">
           <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
           Add
-        </button>
+        </a>
       </div>
     </div>
     {% endfor %}
   </div>
+  {% if not dishes %}
+  <div class="mt-8 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center">
+    <p class="text-lg font-bold text-slate-900 dark:text-slate-100">No dishes found.</p>
+    <p class="mt-2 text-slate-500 dark:text-slate-400">Try another search by dish name, ingredient, or restaurant.</p>
+  </div>
+  {% endif %}
 </div>
        <!-- Pagination -->
+        {% set page_suffix = '&search=' ~ (selected_search | urlencode) if selected_search else '' %}
         <div class="flex justify-center items-center gap-2 mt-16">
                 {% if current_page > 1 %}
-                <a href="/dishes?page={{ current_page - 1 }}" 
+                <a href="/dishes?page={{ current_page - 1 }}{{ page_suffix }}" 
                    class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
-                    <span class="material-symbols-outlined">chevron_left</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M12.5 5 7.5 10l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </a>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
-                <a href="/dishes?page={{ p }}" 
+                <a href="/dishes?page={{ p }}{{ page_suffix }}" 
                    class="size-10 rounded-xl flex items-center justify-center font-bold transition-all 
                    {{ 'bg-primary text-background-dark shadow-lg shadow-primary/20' if p == current_page else 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-primary hover:text-primary' }}">
                     {{ p }}
@@ -223,9 +250,11 @@
                 {% endfor %}
 
                 {% if current_page < total_pages %}
-                <a href="/dishes?page={{ current_page + 1 }}" 
+                <a href="/dishes?page={{ current_page + 1 }}{{ page_suffix }}" 
                    class="size-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-primary/10 transition-colors">
-                    <span class="material-symbols-outlined">chevron_right</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M7.5 5 12.5 10l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </a>
                 {% endif %}
             </div>
