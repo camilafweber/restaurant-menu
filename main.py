@@ -1,18 +1,29 @@
+from http import cookies
 import json
 import sqlite3
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Response
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from math import ceil
 
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/static_dish", StaticFiles(directory="static_dish"), name="static_dish")
 
-templates = Jinja2Templates(directory="frontend/templates")
+
 
 DB_NAME = "menuproject3.db"
 COMPANY_CATEGORY_DEFINITIONS = [
@@ -81,8 +92,8 @@ def get_company_category_options():
         cursor.close()
         return options
 
-def get_cart(request: Request):
-        raw_cart = request.cookies.get("cart", "{}")
+def get_cart():
+        raw_cart = cookies.get("cart", "{}")
 
         try:
                 parsed_cart = json.loads(raw_cart)
@@ -105,11 +116,11 @@ def get_cart(request: Request):
 
         return clean_cart
 
-def get_cart_count(request: Request):
-        return sum(get_cart(request).values())
+def get_cart_count():
+        return sum(get_cart().values())
 
 def build_cart_response(redirect_to: str, cart: dict[str, int]):
-        response = RedirectResponse(url=redirect_to, status_code=303)
+        response = Response(url=redirect_to, status_code=303)
         response.set_cookie(
                 "cart",
                 json.dumps(cart),
@@ -129,8 +140,8 @@ ensure_company_category_schema()
 conection = get_conection()
 cursor = conection.cursor()
 
-@app.get("/company/{company_id}", response_class=HTMLResponse)
-async def company(request: Request, company_id: int, search: str | None = None):
+@app.get("/company/{company_id}")
+async def company(company_id: int, search: str | None = None):
 
         cursor = conection.cursor()
         search_term = (search or "").strip().lower()
@@ -140,7 +151,7 @@ async def company(request: Request, company_id: int, search: str | None = None):
 
         if row is None:
                 cursor.close()
-                return RedirectResponse(url="/companies", status_code=303)
+                return Response(url="/companies", status_code=303)
 
         dish_query = """
                 SELECT id, name, price, descript, rating, image_url
@@ -166,22 +177,14 @@ async def company(request: Request, company_id: int, search: str | None = None):
         cursor.close()
         
        
-        return templates.TemplateResponse(
-                "company.html",
-                {
-                        "request": request,
-                        "name": row["name"],
-                        "id": row["id"],
-                        "description": row["description"],
-                        "summary": row["summary"],
-                        "image_path": row["image_path"],
-                        "dishes": dishes,
-                        "selected_search": search or "",
-                        "cart_count": get_cart_count(request),
-                        
-                }
-        )
-       
+        if not row:
+                return {"error": "Company not found"}, 404      
+        
+        return {
+                "company": dict(row),
+                "dishes": [dict(d) for d in dishes],
+                "selected_search": search or ""
+        }
 
 @app.get("/category")
 async def categories():
@@ -196,8 +199,8 @@ async def categories():
         return [dict(row) for row in rows]
 
 
-@app.get("/dish/{dish_id}", response_class=HTMLResponse)
-async def dish(request:Request, dish_id):
+@app.get("/dish/{dish_id}")
+async def dish(dish_id):
         cursor = conection.cursor()
 
 
@@ -206,18 +209,10 @@ async def dish(request:Request, dish_id):
         
         cursor.close()
 
-        id = row ['id']
-        name = row ['name']
-        price = row ['price']
-        descript = row ["descript"]
-        category_id = row ['category_id']
-        rating = row ['rating']
-        image_url = row ['image_url']
-
-        return templates.TemplateResponse(
-                request=request, name="dish.html", context={"id": id, "name": name, "price": price, "descript": descript, "category_id":category_id, "rating": rating, "image_url": image_url}     
-        )
-
+        if not row:
+                return {"error": "Dish not found"}, 404
+        
+        return dict(row)
      
       
 
@@ -247,8 +242,8 @@ async def rating():
         return [dict(row) for row in rows]
 
 @app.get("/cart")
-async def cart(request: Request):
-        cart = get_cart(request)
+async def cart():
+        cart = get_cart()
         cart_count = sum(cart.values())
         items = []
         total_price = 0.0
@@ -281,39 +276,36 @@ async def cart(request: Request):
                                 }
                         )
 
-        return templates.TemplateResponse(
-                "cart.html",
-                {
-                        "request": request,
+        return {
                         "items": items,
                         "cart_count": cart_count,
                         "total_price": total_price,
                 },
-        )
+    
 
 @app.get("/cart/add")
-async def add_to_cart(request: Request, dish_id: int, next: str = "/dishes"):
+async def add_to_cart(dish_id: int, next: str = "/dishes"):
         if not dish_exists(dish_id):
-                return RedirectResponse(url=next, status_code=303)
+                return Response(url=next, status_code=303)
 
-        cart = get_cart(request)
+        cart = get_cart()
         cart_key = str(dish_id)
         cart[cart_key] = cart.get(cart_key, 0) + 1
         return build_cart_response(next, cart)
 
 @app.get("/cart/increase")
-async def increase_cart_item(request: Request, dish_id: int, next: str = "/cart"):
+async def increase_cart_item(dish_id: int, next: str = "/cart"):
         if not dish_exists(dish_id):
-                return RedirectResponse(url=next, status_code=303)
+                return Response(url=next, status_code=303)
 
-        cart = get_cart(request)
+        cart = get_cart()
         cart_key = str(dish_id)
         cart[cart_key] = cart.get(cart_key, 0) + 1
         return build_cart_response(next, cart)
 
 @app.get("/cart/decrease")
-async def decrease_cart_item(request: Request, dish_id: int, next: str = "/cart"):
-        cart = get_cart(request)
+async def decrease_cart_item(dish_id: int, next: str = "/cart"):
+        cart = get_cart()
         cart_key = str(dish_id)
 
         if cart_key in cart:
@@ -325,13 +317,13 @@ async def decrease_cart_item(request: Request, dish_id: int, next: str = "/cart"
         return build_cart_response(next, cart)
 
 @app.get("/cart/remove")
-async def remove_from_cart(request: Request, dish_id: int, next: str = "/cart"):
-        cart = get_cart(request)
+async def remove_from_cart(dish_id: int, next: str = "/cart"):
+        cart = get_cart()
         cart.pop(str(dish_id), None)
         return build_cart_response(next, cart)
 
-@app.get("/companies", response_class=HTMLResponse)
-async def companies(request: Request, page: int = 1, category_id: int | None = None, search: str | None = None):
+@app.get("/companies")
+async def companies(page: int = 1, category_id: int | None = None, search: str | None = None):
         
         items_per_page = 12
         offset = (page - 1) * items_per_page
@@ -385,30 +377,24 @@ async def companies(request: Request, page: int = 1, category_id: int | None = N
         cursor.execute(query, (*query_params, items_per_page, offset))
         rows = cursor.fetchall()
 
+        
         cursor.execute(count_query, count_params)
         total_items = cursor.fetchone()[0]
         total_pages = ceil(total_items / items_per_page)
+
+        companies_list =[dict(row) for row in rows]
         
         cursor.close()
 
-        return templates.TemplateResponse(
-                 "companies.html",
-                 {
-                        "request": request,
-                        "companies": rows,
-                        "current_page": page,
-                        "total_pages": total_pages,
-                        "selected_category_id": selected_category_id,
-                        "selected_search": search_term,
-                        "category_options": category_options,
-                        "cart_count": get_cart_count(request),
-                 }
-               
-       )
+        return {
+                "companies": [dict(row) for row in rows],
+                "total_pages": total_pages,
+                "current_page": page,
+        }
 
 
-@app.get("/dishes", response_class=HTMLResponse)
-async def dishes(request:Request, page: int = 1, search: str | None = None):
+@app.get("/dishes")
+async def dishes(page: int = 1, search: str | None = None):
         
         items_per_page = 12
         offset = (page - 1) * items_per_page
@@ -444,20 +430,17 @@ async def dishes(request:Request, page: int = 1, search: str | None = None):
         total_items = cursor.fetchone()[0]
         total_pages = max(1, ceil(total_items / items_per_page)) if total_items else 1
 
+        dishes_list = [dict(row) for row in rows]
 
         cursor.close()
         
-        return templates.TemplateResponse(
-                "dishes.html",
-                {
-                        "request": request,
-                        "dishes": rows,
+        return {
+                        "dishes": [dict(row) for row in rows],
                         "current_page": page,
                         "total_pages": total_pages,
                         "selected_search": search or "",
-                        "current_url": str(request.url.path) + (f'?{request.url.query}' if request.url.query else ""),
-                        "cart_count": get_cart_count(request),
-                },
-        )
+                        "dishes_list": dishes_list,
+                }
+        
         
         
