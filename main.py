@@ -1,18 +1,34 @@
 from http import cookies
 import json
 import sqlite3
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Response
+from fastapi import Response, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from math import ceil
 
 
 app = FastAPI()
 
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+]
+
+raw_allowed_origins = os.getenv("ALLOWED_ORIGINS", "")
+if raw_allowed_origins.strip():
+    allowed_origins = [origin.strip() for origin in raw_allowed_origins.split(",") if origin.strip()]
+else:
+    allowed_origins = DEFAULT_ALLOWED_ORIGINS
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,6 +38,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/static_dish", StaticFiles(directory="static_dish"), name="static_dish")
+templates = Jinja2Templates(directory="frontend/templates")
 
 
 
@@ -92,8 +109,8 @@ def get_company_category_options():
         cursor.close()
         return options
 
-def get_cart():
-        raw_cart = cookies.get("cart", "{}")
+def get_cart(request: Request):
+        raw_cart = request.cookies.get("cart", "{}")
 
         try:
                 parsed_cart = json.loads(raw_cart)
@@ -116,11 +133,11 @@ def get_cart():
 
         return clean_cart
 
-def get_cart_count():
-        return sum(get_cart().values())
+def get_cart_count(request: Request):
+        return sum(get_cart(request).values())
 
 def build_cart_response(redirect_to: str, cart: dict[str, int]):
-        response = Response(url=redirect_to, status_code=303)
+        response = RedirectResponse(url=redirect_to, status_code=303)
         response.set_cookie(
                 "cart",
                 json.dumps(cart),
@@ -140,8 +157,12 @@ ensure_company_category_schema()
 conection = get_conection()
 cursor = conection.cursor()
 
+@app.get("/")
+async def home():
+        return RedirectResponse(url="/companies", status_code=303)
+
 @app.get("/company/{company_id}")
-async def company(company_id: int, search: str | None = None):
+async def company(request: Request, company_id: int, search: str | None = None):
 
         cursor = conection.cursor()
         search_term = (search or "").strip().lower()
@@ -151,7 +172,7 @@ async def company(company_id: int, search: str | None = None):
 
         if row is None:
                 cursor.close()
-                return Response(url="/companies", status_code=303)
+                return RedirectResponse(url="/companies", status_code=303)
 
         dish_query = """
                 SELECT id, name, price, descript, rating, image_url
@@ -179,12 +200,17 @@ async def company(company_id: int, search: str | None = None):
        
         if not row:
                 return {"error": "Company not found"}, 404      
-        
-        return {
-                "company": dict(row),
-                "dishes": [dict(d) for d in dishes],
-                "selected_search": search or ""
-        }
+
+        company_data = dict(row)
+        return templates.TemplateResponse(
+                "company.html",
+                {
+                        "request": request,
+                        **company_data,
+                        "dishes": [dict(d) for d in dishes],
+                        "selected_search": search or "",
+                },
+        )
 
 @app.get("/category")
 async def categories():
@@ -200,19 +226,35 @@ async def categories():
 
 
 @app.get("/dish/{dish_id}")
-async def dish(dish_id):
+async def dish(request: Request, dish_id: int):
         cursor = conection.cursor()
 
-
-        cursor.execute(f"SELECT * FROM dish where id = {dish_id}")
+        cursor.execute(
+                """
+                SELECT dish.*, category.name AS category
+                FROM dish
+                LEFT JOIN category ON category.id = dish.category_id
+                WHERE dish.id = ?
+                """,
+                (dish_id,),
+        )
         row= cursor.fetchone()
         
         cursor.close()
 
         if not row:
                 return {"error": "Dish not found"}, 404
-        
-        return dict(row)
+
+        dish_data = dict(row)
+        return templates.TemplateResponse(
+                "dish.html",
+                {
+                        "request": request,
+                        **dish_data,
+                        "cart_count": get_cart_count(request),
+                        "current_url": str(request.url),
+                },
+        )
      
       
 
@@ -242,8 +284,8 @@ async def rating():
         return [dict(row) for row in rows]
 
 @app.get("/cart")
-async def cart():
-        cart = get_cart()
+async def cart(request: Request):
+        cart = get_cart(request)
         cart_count = sum(cart.values())
         items = []
         total_price = 0.0
@@ -276,36 +318,40 @@ async def cart():
                                 }
                         )
 
-        return {
+        return templates.TemplateResponse(
+                "cart.html",
+                {
+                        "request": request,
                         "items": items,
                         "cart_count": cart_count,
                         "total_price": total_price,
                 },
+        )
     
 
 @app.get("/cart/add")
-async def add_to_cart(dish_id: int, next: str = "/dishes"):
+async def add_to_cart(dish_id: int, request: Request, next: str = "/dishes"):
         if not dish_exists(dish_id):
-                return Response(url=next, status_code=303)
+                return RedirectResponse(url=next, status_code=303)
 
-        cart = get_cart()
+        cart = get_cart(request)
         cart_key = str(dish_id)
         cart[cart_key] = cart.get(cart_key, 0) + 1
         return build_cart_response(next, cart)
 
 @app.get("/cart/increase")
-async def increase_cart_item(dish_id: int, next: str = "/cart"):
+async def increase_cart_item(dish_id: int, request: Request, next: str = "/cart"):
         if not dish_exists(dish_id):
-                return Response(url=next, status_code=303)
+                return RedirectResponse(url=next, status_code=303)
 
-        cart = get_cart()
+        cart = get_cart(request)
         cart_key = str(dish_id)
         cart[cart_key] = cart.get(cart_key, 0) + 1
         return build_cart_response(next, cart)
 
 @app.get("/cart/decrease")
-async def decrease_cart_item(dish_id: int, next: str = "/cart"):
-        cart = get_cart()
+async def decrease_cart_item(dish_id: int, request: Request, next: str = "/cart"):
+        cart = get_cart(request)
         cart_key = str(dish_id)
 
         if cart_key in cart:
@@ -317,13 +363,13 @@ async def decrease_cart_item(dish_id: int, next: str = "/cart"):
         return build_cart_response(next, cart)
 
 @app.get("/cart/remove")
-async def remove_from_cart(dish_id: int, next: str = "/cart"):
-        cart = get_cart()
+async def remove_from_cart(dish_id: int, request: Request, next: str = "/cart"):
+        cart = get_cart(request)
         cart.pop(str(dish_id), None)
         return build_cart_response(next, cart)
 
 @app.get("/companies")
-async def companies(page: int = 1, category_id: int | None = None, search: str | None = None):
+async def companies(request: Request, page: int = 1, category_id: int | None = None, search: str | None = None):
         
         items_per_page = 12
         offset = (page - 1) * items_per_page
@@ -380,21 +426,29 @@ async def companies(page: int = 1, category_id: int | None = None, search: str |
         
         cursor.execute(count_query, count_params)
         total_items = cursor.fetchone()[0]
-        total_pages = ceil(total_items / items_per_page)
+        total_pages = max(1, ceil(total_items / items_per_page)) if total_items else 1
 
-        companies_list =[dict(row) for row in rows]
+        #companies_list =[dict(row) for row in rows]
         
         cursor.close()
 
-        return {
-                "companies": [dict(row) for row in rows],
-                "total_pages": total_pages,
-                "current_page": page,
-        }
+        return templates.TemplateResponse(
+                "companies.html",
+                {
+                        "request": request,
+                        "companies": [dict(row) for row in rows],
+                        "total_pages": total_pages,
+                        "current_page": page,
+                        "category_options": category_options,
+                        "selected_category_id": selected_category_id,
+                        "selected_search": search or "",
+                        "cart_count": get_cart_count(request),
+                },
+        )
 
 
 @app.get("/dishes")
-async def dishes(page: int = 1, search: str | None = None):
+async def dishes(request: Request, page: int = 1, search: str | None = None):
         
         items_per_page = 12
         offset = (page - 1) * items_per_page
@@ -434,13 +488,19 @@ async def dishes(page: int = 1, search: str | None = None):
 
         cursor.close()
         
-        return {
+        return templates.TemplateResponse(
+                "dishes.html",
+                {
+                        "request": request,
                         "dishes": [dict(row) for row in rows],
                         "current_page": page,
                         "total_pages": total_pages,
                         "selected_search": search or "",
                         "dishes_list": dishes_list,
-                }
+                        "cart_count": get_cart_count(request),
+                        "current_url": str(request.url),
+                },
+        )
         
         
         

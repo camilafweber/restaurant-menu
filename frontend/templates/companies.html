@@ -71,15 +71,29 @@
           </div>
           <nav class="hidden md:flex items-center gap-8">
             <a class="text-slate-600 dark:text-slate-400 hover:text-primary font-semibold transition-colors"
-              href="#">Home</a>
-            <a class="text-primary font-semibold" href="#">Explore</a>
+              href="/companies">Home</a>
+            <a class="text-primary font-semibold" href="/companies">Explore</a>
             <a class="text-slate-600 dark:text-slate-400 hover:text-primary font-semibold transition-colors"
-              href="#">Offers</a>
+              href="/dishes">Dishes</a>
           </nav>
         </div>
 
         <div class="flex items-center gap-4">
 
+          <a href="/cart"
+            class="relative flex items-center justify-center rounded-xl h-10 w-10 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary transition-all border border-slate-200 dark:border-slate-700">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6.5 6.5h14l-1.6 7.2a2 2 0 0 1-2 1.6H9.2a2 2 0 0 1-2-1.7L5.8 3.8H3"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M9.5 20.2h.1M17.2 20.2h.1" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            {% if cart_count %}
+            <span
+              class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary text-slate-900 text-[10px] font-bold flex items-center justify-center">
+              {{ cart_count }}
+            </span>
+            {% endif %}
+          </a>
 
           <div class="size-10 rounded-full border-2 border-primary/20 bg-cover bg-center overflow-hidden">
             <img

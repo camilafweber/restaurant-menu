@@ -98,7 +98,11 @@
               href="/cart"
               class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary/20 transition-colors"
             >
-              <span class="material-symbols-outlined">shopping_cart</span>
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6.5 6.5h14l-1.6 7.2a2 2 0 0 1-2 1.6H9.2a2 2 0 0 1-2-1.7L5.8 3.8H3"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9.5 20.2h.1M17.2 20.2h.1" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
               {% if cart_count %}
               <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary text-background-dark text-[10px] font-bold flex items-center justify-center">
                 {{ cart_count }}
@@ -185,7 +189,12 @@
                 href="/cart/add?dish_id={{ id }}&next={{ current_url | urlencode }}"
                 class="h-14 flex-1 w-full bg-primary text-background-dark text-lg font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
               >
-                <span class="material-symbols-outlined">shopping_bag</span>
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6.8 8.5h10.4l1 11H5.8l1-11Z" stroke="currentColor" stroke-width="1.8"
+                    stroke-linejoin="round" />
+                  <path d="M9.2 8.5a2.8 2.8 0 1 1 5.6 0M12 12v4M10 14h4" stroke="currentColor"
+                    stroke-width="1.8" stroke-linecap="round" />
+                </svg>
                 Add to Order
               </a>
             </div>
